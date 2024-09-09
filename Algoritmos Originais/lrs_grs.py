@@ -51,14 +51,6 @@ def atualiza_plot(cidades,x,lines,ax):
         else:
             l = ax.plot([p1[0],p2[0]],[p1[1],p2[1]],color='k')
         lines[i] = l[0]
-    
-    
-
-
-
-
-
-
 p = 7
 
 cidades = np.random.rand(p,2)
