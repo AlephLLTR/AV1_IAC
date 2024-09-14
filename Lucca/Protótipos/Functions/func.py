@@ -16,7 +16,8 @@ Questão 2
 
 """
 def f_q2(x, y): #x ∈ [-2, 4], y ∈ [-2, 5]
-  return -np.exp((x**2+y**2)) + 2*-np.exp(((x-1.7)**2)+(y-1.7)**2)
+  # return np.exp(-(x**2+y**2)) + 2 * -np.exp(((x-1.7)**2 + (y - 1.7)**2))
+  return np.exp(-(x**2+y**2))+ 2 * np.exp(-((x-1.7)**2 + (y - 1.7)**2))
 lim_x_q2 = [-2, 4]
 lim_y_q2 = [-2, 5]
 

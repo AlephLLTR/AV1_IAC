@@ -4,7 +4,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import Functions.func as fun
 
-def view_3d(lim_x=fun.lim_xy_q8, lim_y=fun.lim_xy_q8, e=0, x_color='r', y_color='g', z_color='b', resolution=60, f=fun.f_q8):
+def view_3d(lim_x=fun.lim_xy_q3, lim_y=fun.lim_xy_q3, e=0, x_color='r', y_color='g', z_color='b', resolution=60, f=fun.f_q3):
 
   x_axis = np.linspace(*lim_x)
   y_axis = np.linspace(*lim_y)
@@ -15,13 +15,11 @@ def view_3d(lim_x=fun.lim_xy_q8, lim_y=fun.lim_xy_q8, e=0, x_color='r', y_color=
   fig = plt.figure()
 
   ax = fig.add_subplot(111, projection='3d')
-  ax.plot_surface(X, Y, z_axis, alpha=0.7, cmap=cm.inferno)
+  ax.plot_surface(X, Y, z_axis, alpha=0.7, cmap=cm.turbo)
 
   ax.set_xlabel("X")
   ax.set_ylabel("Y")
   ax.set_zlabel("Z")
-  
-
 
   plt.show()
   

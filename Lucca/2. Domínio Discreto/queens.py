@@ -3,22 +3,23 @@ import matplotlib.pyplot as plt
 
 def queens(low=1, high=9, max_it=100000, sigma=.2, T=100):
 
-  def checkUnique(x, hx):
+  def isUnique(x, hx):
     for h in hx:
       if np.array_equal(x, h):
-        return True
-    return False
+        return False
+    return True
   
   def isValid(f):
     return f == 28
   
   def perturb(x):
-    x_cand = x + generateNewTable()
+    x_cand = x + np.random.randint(low, high, 8)
     for i in range(x.shape[0]):
       if x_cand[i] < 1:
-        x_cand[i] = 1
+        x_cand[i] = np.random.randint(low, high*100/sigma)
       if x_cand[i] > 8:
-        x_cand[i] = 8
+        x_cand[i] = np.random.randint(low, high)
+    # print(x_cand)
     return x_cand
   
   def f(x): # Calcula a qtd de pares atacantes
@@ -48,20 +49,28 @@ def queens(low=1, high=9, max_it=100000, sigma=.2, T=100):
       x_opt = x_cand
       f_opt = f_cand
     elif f_cand < f_opt:
-      x_cand = generateNewTable()
-      f_cand = f(x_cand)
+      x_opt = generateNewTable()
+      f_opt = f(x_opt)
       
     if f_cand == 28:
-      print('xcand ', x_cand, ' fcand ', f_cand)
+      print('xcand  ', x_cand, ' fcand  ', f_cand)
+      if isUnique(x_cand, history_x):
+        history_x.append(x_cand)
+        
     elif f_opt == 28:
       print('xopt  ', x_opt, ' fopt  ', f_opt)
+      if isUnique(x_opt, history_x):
+        history_x.append(x_opt)
+
+        
+      
       
     # if isValid(f_opt):
     #   return(x_opt)
       
     i+=1
     
-  # print(history_x)
+  print('History: ', history_x)
   
 
 
