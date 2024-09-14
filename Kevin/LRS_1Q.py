@@ -36,8 +36,8 @@ for iterations in range(100):
                f_opt = f_cand
                x_opt = x_cand
                y_opt = y_cand 
-          a[aux2] = round(f_opt, 5)
-          aux2 += 1
+     a[aux2] = round(f_opt, 5)
+     aux2 += 1
 
 #      ax.scatter(x_opt,y_opt,f_opt, marker='X', color='r')
 
@@ -47,9 +47,5 @@ for iterations in range(100):
 # ax.set_ylabel('y')
 # ax.set_zlabel('z')
 valores, aux3 = np.unique(a, return_counts=True)
-i = 0 
-for j in aux3:
-     i = i +j
-print(i)
 moda = valores[np.argmax(aux3)]
 print(f"mode_value: {moda}")   

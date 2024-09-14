@@ -36,7 +36,7 @@ def plot_inicial(cidades,x):
     return lines,ax
 
 def atualiza_plot(cidades,x,lines,ax):
-    plt.pause(.5)
+    plt.pause(.2)
 
     for line in lines:
         line.remove()

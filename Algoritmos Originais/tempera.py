@@ -32,10 +32,13 @@ it_max = 1000
 sigma = .2
 historico_f = [f_opt]
 i = 0
-while i < it_max:
 
+while i < it_max:
+    
+    # print('xopt ', x_opt)
     x_cand = perturb(x_opt,xl,xu,sigma)
     f_cand = f(*x_cand)
+    # print('xcand ', x_cand)
     p_ij = np.exp(-(f_cand-f_opt)/T)
     if f_cand < f_opt or p_ij >= np.random.uniform(0,1):
         x_opt = x_cand
@@ -43,11 +46,23 @@ while i < it_max:
         ax.scatter(x_opt[0],x_opt[1],f_opt,marker='x',color='b',alpha=.3)
     historico_f.append(f_opt)
     i+=1
-    T*=.89
-    
+    T*=.89    
 
-ax.scatter(x_opt[0],x_opt[1],f_opt,marker='x',color='g',s=150,linewidth=3)
-plt.show()
+# ax.scatter(x_opt[0],x_opt[1],f_opt,marker='x',color='g',s=150,linewidth=3)
+# plt.show()
 
-plt.plot(historico_f)
-plt.show()
+# plt.plot(historico_f)
+# plt.show()
+
+
+def funny(x, xl=1, xu=8):
+    x_cand = x + np.random.randint(1, 9, 8)
+    for i in range(x.shape[0]):
+        if x_cand[i] < xl:
+            x_cand[i] = xl
+        if x_cand[i] > xu:
+            x_cand[i] = xu
+    return x_cand
+sel = np.random.randint(1, 9, 8)
+print(sel)
+print(funny(sel))

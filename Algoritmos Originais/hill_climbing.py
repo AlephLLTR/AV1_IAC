@@ -3,11 +3,8 @@ import matplotlib.pyplot as plt
 
 def perturb(x,e):
     return np.random.uniform(low=x-e,high=x+e)
-
 def f(x):
     return np.exp(-(x**2)) + 3*np.exp(-((x-3)**2))
-
-
 x_axis = np.linspace(-2,5,1000)
 plt.plot(x_axis,f(x_axis))
 # plt.show()
