@@ -35,10 +35,10 @@ i = 0
 
 while i < it_max:
     
-    # print('xopt ', x_opt)
+    print('xopt ', x_opt)
     x_cand = perturb(x_opt,xl,xu,sigma)
     f_cand = f(*x_cand)
-    # print('xcand ', x_cand)
+    print('xcand ', x_cand)
     p_ij = np.exp(-(f_cand-f_opt)/T)
     if f_cand < f_opt or p_ij >= np.random.uniform(0,1):
         x_opt = x_cand
@@ -55,14 +55,14 @@ while i < it_max:
 # plt.show()
 
 
-def funny(x, xl=1, xu=8):
-    x_cand = x + np.random.randint(1, 9, 8)
-    for i in range(x.shape[0]):
-        if x_cand[i] < xl:
-            x_cand[i] = xl
-        if x_cand[i] > xu:
-            x_cand[i] = xu
-    return x_cand
-sel = np.random.randint(1, 9, 8)
-print(sel)
-print(funny(sel))
+# def funny(x, xl=1, xu=8):
+#     x_cand = x + np.random.randint(1, 9, 8)
+#     for i in range(x.shape[0]):
+#         if x_cand[i] < xl:
+#             x_cand[i] = xl
+#         if x_cand[i] > xu:
+#             x_cand[i] = xu
+#     return x_cand
+# sel = np.random.randint(1, 9, 8)
+# print(sel)
+# print(funny(sel))
