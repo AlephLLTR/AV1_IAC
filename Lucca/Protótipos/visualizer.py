@@ -4,7 +4,7 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import Functions.func as fun
 
-def view_3d(lim_x=fun.lim_xy_q7, lim_y=fun.lim_xy_q7, e=0, x_color='r', y_color='g', z_color='b', resolution=60, f=fun.f_q7):
+def view_3d(lim_x=fun.lim_xy_q1, lim_y=fun.lim_xy_q1, e=0, x_color='r', y_color='g', z_color='b', resolution=60, f=fun.f_q1):
 
   x_axis = np.linspace(*lim_x)
   y_axis = np.linspace(*lim_y)
