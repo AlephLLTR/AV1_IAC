@@ -1,53 +1,48 @@
 import numpy as np
+from time import time
 
-#Usei o ChatGPT pra documentar o código, tava com preguiça - Lucca
-
-def print_chessboard(board):
-    """
-    Função de Exibição/Feita pelo ChatGPT
-    Imprime o tabuleiro de xadrez de 8x8 onde a posição das rainhas é representada por 'Q' e espaços vazios por '.'.
-    
-    Parâmetros:
-    board (list): Lista de 8 inteiros, onde cada valor representa a coluna em que uma rainha está posicionada
-                  em cada linha (índice) do tabuleiro.
-    """
-    print("\n".join([" ".join(['Q' if board[i] == j else '.' for j in range(8)]) for i in range(8)]))
-    print("\n" + "="*16 + "\n")
+#Docstrings feitas em parte pelo ChatGPT
 
 def decay_1(decay, T):
     """
-    Aplica a taxa de decaimento à temperatura (T), importante no algoritmo de otimização simulada.
+    Aplica a taxa de decaimento à temperatura (T), seguindo o primeiro tipo de decaimento mostrado no slide.
     
     Parâmetros:
     decay (float): Fator de decaimento para reduzir a temperatura.
     T (float): Temperatura atual do sistema.
 
     Retorna:
-    float: Nova temperatura após o decaimento.
+    float: Nova temperatura após o decaimento. Temperatura x Decaimento
     """
     return T * decay
 
-def queens(max_it=5000, alpha=0.79):
+def decay_2(decay, T):
     """
-    Resolve o problema das 8 rainhas utilizando a técnica de recozimento simulado (simulated annealing).
-    O objetivo é encontrar todas as 92 configurações únicas onde 8 rainhas podem ser colocadas no tabuleiro sem atacar umas às outras.
+    Aplica a taxa de decaimento à temperatura (T), segue o segundo tipo de decaimento mostrado no slide.
+    
+    Parâmetros:
+    decay (float): Fator de decaimento para reduzir a temperatura.
+    T (float): Temperatura atual do sistema.
+
+    Retorna:
+    float: Nova temperatura após o decaimento. Temperatura/(1 + decaimento + Temperatura²)
+    """
+    return T / (1 + decay * np.sqrt(T))
+
+
+def queens(max_it=5000, alpha=0.79, defT=100, pick=4 ,output_file='queens_solutions.txt'):
+    """
+    Resolve o problema das 8 rainhas utilizando a técnica de recozimento simulado e salva as configurações aceitas (x_opt) em um arquivo.
     
     Parâmetros:
     max_it (int): Número máximo de iterações para a otimização (padrão: 5000).
-    alpha (float): Fator de decaimento para controlar a redução da temperatura (padrão: 0.79).
+    alpha (float): Fator de decaimento para a temperatura (padrão: 0.79).
+    defT (int): Valor padrão de temperatura, auxiliar (padrão: 100). 
+    pick (int): Quantidade de valores perturbados em um candidato x (padrão: 4).
+    output_file (str): Caminho do arquivo onde as configurações de rainhas serão salvas.
     """
     
     def isUnique(x, hx):
-        """
-        Verifica se a configuração x é única em relação ao histórico de soluções (hx).
-        
-        Parâmetros:
-        x (numpy array): Configuração atual das rainhas no tabuleiro.
-        hx (list): Histórico de configurações já encontradas.
-
-        Retorna:
-        bool: True se x é único, False caso contrário.
-        """
         for h in hx:
             if np.array_equal(x, h):
                 return False
@@ -64,8 +59,10 @@ def queens(max_it=5000, alpha=0.79):
         numpy array: Nova configuração após a perturbação.
         """
         x_cand = np.copy(x)
-        pos = np.random.choice(len(x), 2)
+        # print(x_cand)
+        pos = np.random.choice(len(x), pick)
         x_cand[pos] = np.random.permutation(x_cand[pos])
+        # print(x_cand)
         return x_cand
 
     def f(x):
@@ -94,54 +91,55 @@ def queens(max_it=5000, alpha=0.79):
         """
         return np.random.permutation(8)
 
-    x_opt = generateNewTable()  # Gera uma configuração inicial
-    f_opt = f(x_opt)  # Calcula a função objetivo da configuração inicial
-    history_x = []  # Histórico das configurações únicas encontradas
-    possible = 92  # Número de soluções possíveis para o problema das 8 rainhas
+    x_opt = generateNewTable() #Gera uma configuração inicial
+    f_opt = f(x_opt) #Gera o f(x_opt) 
+    history_x = [] #Inicializa o histórico de configurações únicas encontradas.
+    possible = 92 
     i = 0
-    T = 100  # Temperatura inicial para o algoritmo de recozimento simulado
+    T = defT #Temperatura inicial
+    
+    with open(output_file, 'w') as file:  # Abre o arquivo em modo de escrita
+        while len(history_x) < 92:
+            x_cand = perturb(x_opt)
+            f_cand = f(x_cand)
 
-    # Loop principal do algoritmo
-    while len(history_x) < 92:  # Continua até encontrar todas as 92 soluções
-        x_cand = perturb(x_opt)  # Gera uma nova solução candidata
-        f_cand = f(x_cand)  # Avalia a função objetivo da nova solução
+            exponent = -(f_cand - f_opt) / T
+            exponent = min(exponent, 700)
+            exponent = max(exponent, -700)
 
-        # Calcula a probabilidade de aceitação para o recozimento simulado
-        exponent = -(f_cand - f_opt) / T
-        exponent = min(exponent, 700)  # Limita o valor do expoente para evitar overflows numéricos
-        exponent = max(exponent, -700)
+            p_i = np.exp(exponent)
 
-        p_i = np.exp(exponent)  # Probabilidade de aceitar a solução pior
+            if f_cand > f_opt or p_i < np.random.uniform(0, 1):
+                x_opt = x_cand
+                f_opt = f_cand
 
-        # Condição para aceitar a nova solução
-        if f_cand > f_opt or p_i < np.random.uniform(0, 1):
-            x_opt = x_cand
-            f_opt = f_cand
+            T = decay_2(alpha, T)
+            if T < 1e-10:
+                T = 1e-10
 
-        # Aplica o decaimento na temperatura
-        T = decay_1(alpha, T)
-        if T < 1e-10:  # Define um limite inferior para a temperatura
-            T = 1e-10
+            if f_opt == 28 or i >= max_it:
+                if f_opt == 28:
+                    # print('Accepted Table Configuration:')
+                    # print('xopt  ', x_opt, ' fopt  ', f_opt, ' iterations ran ', i, ' remaining: ', possible)
+                    
+                    # Salva a configuração x_opt no arquivo
+                    file.write(f"x_opt: {x_opt.tolist()}, f_opt: {f_opt}, iterations: {i}, remaining: {possible}\n")
 
-        # Verifica se a solução é a ótima ou se o número máximo de iterações foi alcançado
-        if f_opt == 28 or i >= max_it:
-            if f_opt == 28:  # Se for uma solução válida (f_opt == 28)
-                print('Accepted Table Configuration:')
-                print('xopt  ', x_opt, ' fopt  ', f_opt, ' iterations ran ', i, ' remaining: ', possible)
-                print_chessboard(x_opt)  # Imprime o tabuleiro correspondente
-                print('Iterations ran:', i, 'Remaining:', possible)
+                    if isUnique(x_opt, history_x):
+                        possible -= 1
+                        history_x.append(x_opt)
 
-                # Verifica se a solução é única
-                if isUnique(x_opt, history_x):
-                    possible -= 1  # Reduz o número de soluções restantes
-                    history_x.append(x_opt)  # Adiciona a solução ao histórico
-
-            # Gera uma nova solução inicial para continuar a busca
-            x_opt = generateNewTable()
-            f_opt = f(x_cand)
-            i = 0
-            T = 100  # Reinicia a temperatura
-        i += 1  # Incrementa o contador de iterações
-
+                x_opt = generateNewTable()
+                f_opt = f(x_cand)
+                i = 0
+                T = defT
+            i += 1
+            
 # Executa o algoritmo
-queens()
+i = 100
+while i < 151:
+    t0 = time()
+    queens(defT=i)
+    t1 = time()
+    print(i, '|', t1-t0)
+    i += 1
